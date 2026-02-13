@@ -4,7 +4,7 @@ A real-time bookmark management application built with Next.js, Supabase, and Ta
 
 ## 🚀 Live Demo
 
-[Your Vercel URL will go here]
+https://bookmark-manager-flax-zeta.vercel.app/
 
 ## ✨ Features
 
@@ -104,39 +104,6 @@ npm run dev
 
 Visit `http://localhost:3000`
 
-### 6. Deploy to Vercel
-
-1. Push your code to GitHub
-2. Go to [vercel.com](https://vercel.com) and import your repository
-3. Add environment variables in Vercel project settings
-4. Deploy
-5. Update the following with your Vercel URL:
-   - Google OAuth authorized redirect URIs: Add `https://your-app.vercel.app/auth/callback`
-   - Supabase Auth settings: Set Site URL to `https://your-app.vercel.app`
-
-## 🐛 Problems & Solutions
-
-### Problem 1: Authentication Loop
-**Issue**: Users getting redirected between login and home page repeatedly.
-**Solution**: Ensured middleware properly handles session refresh and excluded static files from middleware matcher.
-
-### Problem 2: Realtime Not Working
-**Issue**: Bookmarks not updating in real-time across tabs.
-**Solution**: Added the bookmarks table to Supabase realtime publication using `alter publication supabase_realtime add table bookmarks;`
-
-### Problem 3: Row Level Security Blocking Inserts
-**Issue**: Users couldn't add bookmarks even when authenticated.
-**Solution**: Created proper RLS policies for SELECT, INSERT, and DELETE operations with correct `auth.uid()` checks.
-
-### Problem 4: TypeScript Errors with Server Components
-**Issue**: Async/await issues with Next.js 15 server components.
-**Solution**: Used `await cookies()` in server-side Supabase client and properly typed components.
-
-### Problem 5: OAuth Callback Failing in Production
-**Issue**: Google OAuth callback not working on Vercel.
-**Solution**: Added all necessary redirect URIs to both Google Console and Supabase Auth settings, including production URLs.
-
-## 📝 Usage
 
 1. **Sign In**: Click "Continue with Google" on the login page
 2. **Add Bookmark**: Enter a title and URL, then click "Add Bookmark"
@@ -144,18 +111,12 @@ Visit `http://localhost:3000`
 4. **Delete Bookmark**: Click the trash icon to remove a bookmark
 5. **Real-time Sync**: Open the app in multiple tabs to see live updates
 
-## 📸 Screenshots
 
-[Add screenshots here after deployment]
 
-## 📄 License
-
-MIT
 
 ## 👤 Author
 
-[Your Name]
-
+Vanshika
 ---
 
 Built with ❤️ using Next.js and Supabase
