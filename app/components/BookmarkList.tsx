@@ -52,7 +52,12 @@ export default function BookmarkList({ onGetAddBookmarkHandler }: BookmarkListPr
         },
         (payload) => {
           if (payload.eventType === 'INSERT') {
-            setBookmarks((current) => [payload.new as Bookmark, ...current])
+            const newBookmark = payload.new as Bookmark
+            // Only add if not already in the list (prevent duplicates from optimistic updates)
+            setBookmarks((current) => {
+              const exists = current.some(b => b.id === newBookmark.id)
+              return exists ? current : [newBookmark, ...current]
+            })
           } else if (payload.eventType === 'DELETE') {
             setBookmarks((current) =>
               current.filter((bookmark) => bookmark.id !== payload.old.id)
