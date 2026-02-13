@@ -2,8 +2,13 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import type { Bookmark } from '@/lib/types/database'
 
-export default function AddBookmarkForm() {
+interface AddBookmarkFormProps {
+  onBookmarkAdded?: (bookmark: Bookmark) => void
+}
+
+export default function AddBookmarkForm({ onBookmarkAdded }: AddBookmarkFormProps) {
   const [url, setUrl] = useState('')
   const [title, setTitle] = useState('')
   const [loading, setLoading] = useState(false)
@@ -23,11 +28,18 @@ export default function AddBookmarkForm() {
         return
       }
 
-      const { error: insertError } = await supabase
+      const { data, error: insertError } = await supabase
         .from('bookmarks')
         .insert([{ url, title, user_id: user.id }])
+        .select()
+        .single()
 
       if (insertError) throw insertError
+
+      // Update local state immediately for instant UI feedback
+      if (data && onBookmarkAdded) {
+        onBookmarkAdded(data)
+      }
 
       setUrl('')
       setTitle('')

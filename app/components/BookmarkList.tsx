@@ -4,11 +4,25 @@ import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Bookmark } from '@/lib/types/database'
 
-export default function BookmarkList() {
+interface BookmarkListProps {
+  onGetAddBookmarkHandler?: (handler: (bookmark: Bookmark) => void) => void
+}
+
+export default function BookmarkList({ onGetAddBookmarkHandler }: BookmarkListProps) {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([])
   const [loading, setLoading] = useState(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const supabase = createClient()
+
+  const addBookmarkOptimistically = useCallback((bookmark: Bookmark) => {
+    setBookmarks((current) => [bookmark, ...current])
+  }, [])
+
+  useEffect(() => {
+    if (onGetAddBookmarkHandler) {
+      onGetAddBookmarkHandler(addBookmarkOptimistically)
+    }
+  }, [onGetAddBookmarkHandler, addBookmarkOptimistically])
 
   const fetchBookmarks = useCallback(async () => {
     try {

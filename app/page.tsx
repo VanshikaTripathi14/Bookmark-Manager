@@ -1,16 +1,42 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 import AddBookmarkForm from './components/AddBookmarkForm'
 import BookmarkList from './components/BookmarkList'
 import LogoutButton from './components/LogoutButton'
+import type { Bookmark } from '@/lib/types/database'
 
-export default async function Home() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+export default function Home() {
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [addBookmarkHandler, setAddBookmarkHandler] = useState<((bookmark: Bookmark) => void) | null>(null)
+  const router = useRouter()
+  const supabase = createClient()
 
-  if (!user) {
-    redirect('/login')
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        router.push('/login')
+      } else {
+        setUser(user)
+        setLoading(false)
+      }
+    }
+    checkUser()
+  }, [router, supabase])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    )
   }
+
+  if (!user) return null
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
@@ -25,8 +51,8 @@ export default async function Home() {
           <LogoutButton />
         </div>
 
-        <AddBookmarkForm />
-        <BookmarkList />
+        <AddBookmarkForm onBookmarkAdded={addBookmarkHandler || undefined} />
+        <BookmarkList onGetAddBookmarkHandler={(handler) => setAddBookmarkHandler(() => handler)} />
       </div>
     </div>
   )
